@@ -11,7 +11,7 @@ library(bruceR)
 ```
 
     ## 
-    ## bruceR (v2023.9)
+    ## bruceR (v2024.6)
     ## Broadly Useful Convenient and Efficient R functions
     ## 
     ## Packages also loaded:
@@ -36,17 +36,11 @@ library(bruceR)
     ## https://psychbruce.github.io/bruceR
     ## 
     ## To use this package in publications, please cite:
-    ## Bao, H.-W.-S. (2023). bruceR: Broadly useful convenient and efficient R functions (Version 2023.9) [Computer software]. https://CRAN.R-project.org/package=bruceR
-
-    ## 
-    ## NEWS: A new version of bruceR (2024.6) is available (2024-06-13)!
-    ## 
-    ## ***** Please update *****
-    ## install.packages("bruceR", dep=TRUE)
+    ## Bao, H.-W.-S. (2024). bruceR: Broadly useful convenient and efficient R functions (Version 2024.6) [Computer software]. https://CRAN.R-project.org/package=bruceR
 
     ## 
     ## These packages are dependencies of `bruceR` but not installed:
-    ## - pacman, lmtest, vars, phia
+    ## - pacman, openxlsx, ggtext, lmtest, vars, phia, MuMIn, GGally
     ## 
     ## ***** Install all dependencies *****
     ## install.packages("bruceR", dep=TRUE)
@@ -56,8 +50,6 @@ library(dplyr)
 library(ggstatsplot)
 ```
 
-    ## Warning: package 'ggstatsplot' was built under R version 4.3.3
-
     ## You can cite this package as:
     ##      Patil, I. (2021). Visualizations with statistical details: The 'ggstatsplot' approach.
     ##      Journal of Open Source Software, 6(61), 3167, doi:10.21105/joss.03167
@@ -65,19 +57,10 @@ library(ggstatsplot)
 ``` r
 library(performance)
 library(sjPlot)
-```
 
-    ## Registered S3 methods overwritten by 'broom':
-    ##   method            from  
-    ##   tidy.glht         jtools
-    ##   tidy.summary.glht jtools
+ex <- read_sav("C:/Users/vtrip/OneDrive/Documents/GitHub/Lab7/ex.sav")
 
-    ## #refugeeswelcome
-
-``` r
-ex <- read_sav("C:/Users/Colin/Documents/GitHub/Website/Lab7/ex.sav")
-
-lab7<-read.csv("C:/Users/Colin/Documents/GitHub/Website/Lab7/lab7.csv")
+lab7<-read.csv("C:/Users/vtrip/OneDrive/Documents/GitHub/Lab7/Lab7.csv")
 ```
 
 # Correlation
@@ -168,7 +151,7 @@ ggplot(ex, aes(x = Conscientiousness, y = GPA)) + geom_point() + geom_smooth(met
 ``` r
 #step 1: build a model
 model<-lm(GPA ~ Conscientiousness + AverageHoursofSleep, data = ex)
-
+#linear model, GPA if being predicted by conscientiousness and average sleep hours
 
 #step 2: check the assumptions
 check_model(model)
@@ -177,6 +160,8 @@ check_model(model)
 ![](Lab7_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 ``` r
+#linearity, homogeneity, colinearity is the relevant plot. Co-linearity is MOST IMPORTANT
+
 #step 3: summarize results; add ,std = TRUE if you want to get standardized coefficients
 model_summary(model)
 ```
@@ -212,7 +197,10 @@ model_summary(model)
     ##      [0.00, 1.00]
 
 ``` r
-# or using the tab_model functionl; add  ,show.std = TRUE if you want to get standardized coefficients
+#in this case, conscienteousness is a sig predictor of GPA, when controlling for sleep
+
+
+# or using the tab_model functional; add  ,show.std = TRUE if you want to get standardized coefficients
 tab_model(model)
 ```
 
@@ -306,12 +294,230 @@ plot_model(model,  type ="est",  show.values = TRUE, vline.color = "#1B191999", 
 
 ![](Lab7_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
 
-# Q1: Use the Corr or the ggcorrmat function to plot the correlation between all variables. Which personality traits are correlated with satisfaction with life and which one is not?
+# Q1: Use the Corr or the ggcorrmat function to plot the correlation between all variables. Which personality traits are correlated with satisfaction with life and which one is not? All of the variables, except for openness are correlated with SWL.
+
+``` r
+Corr(lab7)
+```
+
+    ## Pearson's r and 95% confidence intervals:
+    ## ──────────────────────────────────────────────────────────────────────
+    ##                                          r      [95% CI]     p       N
+    ## ──────────────────────────────────────────────────────────────────────
+    ## Extraversion-Agreeableness            0.26 [ 0.15, 0.36] <.001 *** 298
+    ## Extraversion-Conscientiousness        0.14 [ 0.03, 0.25]  .014 *   299
+    ## Extraversion-EmotionalStability       0.34 [ 0.24, 0.44] <.001 *** 297
+    ## Extraversion-Openness                 0.36 [ 0.26, 0.46] <.001 *** 297
+    ## Extraversion-SWL                      0.28 [ 0.18, 0.38] <.001 *** 299
+    ## Agreeableness-Conscientiousness       0.38 [ 0.28, 0.48] <.001 *** 299
+    ## Agreeableness-EmotionalStability      0.38 [ 0.28, 0.47] <.001 *** 297
+    ## Agreeableness-Openness                0.34 [ 0.24, 0.44] <.001 *** 297
+    ## Agreeableness-SWL                     0.17 [ 0.06, 0.28]  .003 **  299
+    ## Conscientiousness-EmotionalStability  0.41 [ 0.31, 0.50] <.001 *** 298
+    ## Conscientiousness-Openness            0.25 [ 0.14, 0.36] <.001 *** 298
+    ## Conscientiousness-SWL                 0.15 [ 0.03, 0.25]  .012 *   300
+    ## EmotionalStability-Openness           0.28 [ 0.17, 0.38] <.001 *** 296
+    ## EmotionalStability-SWL                0.27 [ 0.16, 0.37] <.001 *** 298
+    ## Openness-SWL                          0.03 [-0.08, 0.14]  .591     298
+    ## ──────────────────────────────────────────────────────────────────────
+
+![](Lab7_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+    ## Correlation matrix is displayed in the RStudio `Plots` Pane.
 
 # Q2: Run a multiple regression using the Big 5 personality traits to predict satisfaction with life and plot the results
 
 ``` r
 #for this lab assignment you would assume assumptions are met, but for your own analysis, you will need to examine assumptions carefully
+model<-lm(SWL ~ Conscientiousness + Openness + EmotionalStability + Agreeableness + Extraversion, data = lab7)
+
+model_summary(model)
 ```
 
+    ## 
+    ## Model Summary
+    ## 
+    ## ───────────────────────────────
+    ##                     (1) SWL    
+    ## ───────────────────────────────
+    ## (Intercept)           2.191 ***
+    ##                      (0.308)   
+    ## Conscientiousness     0.019    
+    ##                      (0.051)   
+    ## Openness             -0.101 *  
+    ##                      (0.046)   
+    ## EmotionalStability    0.134 ** 
+    ##                      (0.043)   
+    ## Agreeableness         0.062    
+    ##                      (0.049)   
+    ## Extraversion          0.140 ***
+    ##                      (0.036)   
+    ## ───────────────────────────────
+    ## R^2                   0.138    
+    ## Adj. R^2              0.123    
+    ## Num. obs.           294        
+    ## ───────────────────────────────
+    ## Note. * p < .05, ** p < .01, *** p < .001.
+    ## 
+    ## # Check for Multicollinearity
+    ## 
+    ## Low Correlation
+    ## 
+    ##                Term  VIF   VIF 95% CI Increased SE Tolerance Tolerance 95% CI
+    ##   Conscientiousness 1.36 [1.21, 1.61]         1.16      0.74     [0.62, 0.83]
+    ##            Openness 1.28 [1.15, 1.52]         1.13      0.78     [0.66, 0.87]
+    ##  EmotionalStability 1.42 [1.26, 1.68]         1.19      0.70     [0.59, 0.79]
+    ##       Agreeableness 1.34 [1.20, 1.59]         1.16      0.75     [0.63, 0.83]
+    ##        Extraversion 1.26 [1.14, 1.50]         1.12      0.79     [0.67, 0.88]
+
+``` r
+tab_model(model)
+```
+
+<table style="border-collapse:collapse; border:none;">
+<tr>
+<th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">
+ 
+</th>
+<th colspan="3" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">
+SWL
+</th>
+</tr>
+<tr>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">
+Predictors
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+Estimates
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+CI
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+p
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+(Intercept)
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+2.19
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.58 – 2.80
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>\<0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+Conscientiousness
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.02
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-0.08 – 0.12
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.710
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+Openness
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-0.10
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-0.19 – -0.01
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>0.030</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+EmotionalStability
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.13
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.05 – 0.22
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>0.002</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+Agreeableness
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.06
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-0.03 – 0.16
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.204
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+Extraversion
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.14
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.07 – 0.21
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+<strong>\<0.001</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">
+Observations
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">
+294
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+R<sup>2</sup> / R<sup>2</sup> adjusted
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">
+0.138 / 0.123
+</td>
+</tr>
+</table>
+
+``` r
+plot_model(model,  type ="est",  show.values = TRUE, vline.color = "#1B191999", line.size = 1.5, dot.size = 2.5, colors = "blue") + theme_bruce()
+```
+
+![](Lab7_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
 # Q3: Interpret the R2. Which personality trait(s) can explain unique variance in satisfaction with life when controlling for each other, and which ones cannot? If someone asks you for advice on how to improve life satisfaction, based on your results, which personality trait would you recommend them to change and why?
+
+The intercept represents what the satisfaction of life would be if the
+values of all personality traits was zero. The SWL would be 2.191.
+
+One unit increase in Extraversion results in 0.14 increase in SWL One
+unit increase in Agreeableness results in a 0.062 increase in SWL One
+unit increase in Emotional Stability results in a 0.134 increase in SWL
+One unit increase in Openness results in a 1.01 DECREASE in SWL One unit
+increase in Conscientiousness results in a 0.019 increase in SWL
+
+Openness, emotional stability and extraversion uniquely explain 13.5% of
+the variance. The other two traits are not significant. I would
+recommend they focus on increasing their extraversion because it had the
+largest coefficient. The reason we can compare the values without
+standardizing is because all traits are measured on the same scale.
